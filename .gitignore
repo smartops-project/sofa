@@ -1,0 +1,4 @@
+venv/
+activate
+*.swp
+__pycache__/
