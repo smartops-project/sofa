@@ -151,11 +151,7 @@ class UltraLightFaceRecog:
                 for i in range(boxes.shape[0]):
                     box = boxes[i, :]
                     x1, y1, x2, y2 = box
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0,0,0), -1)
-                    cv2.rectangle(frame, (x1, y2 - 20), (x2, y2), (80,18,236), cv2.FILLED)
-                    font = cv2.FONT_HERSHEY_DUPLEX
-                    text = f"face"
-                    cv2.putText(frame, text, (x1 + 6, y2 - 6), font, 0.5, (255, 255, 255), 1)
+                    cv2.rectangle(frame, (x1-10, y1-10), (x2+10, y2+10), (0,0,0), -1)
                 all_frames.append(frame)
             else:
                 break
