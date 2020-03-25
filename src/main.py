@@ -78,54 +78,29 @@ class VideoWindow(QMainWindow):
         self.goBackButton.setShortcut(QKeySequence(Qt.Key_Left))
 
     def create_control(self):
-        self.playButton = QPushButton()
-        self.playButton.setEnabled(False)
-        self.playButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
-
-        self.speedUpButton = QPushButton()
-        self.speedUpButton.setIcon(
+        self.playButton = _create_button(
+                self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.speedUpButton = _create_button(
                 self.style().standardIcon(QStyle.SP_MediaSeekForward))
-        self.speedUpButton.setEnabled(False)
-
-        self.slowDownButton = QPushButton()
-        self.slowDownButton.setIcon(
+        self.slowDownButton = _create_button(
                 self.style().standardIcon(QStyle.SP_MediaSeekBackward))
-        self.slowDownButton.setEnabled(False)
-
-        self.adv3Button = QPushButton()
-        self.adv3Button.setIcon(
+        self.adv3Button = _create_button(
                 self.style().standardIcon(QStyle.SP_ArrowRight))
-        self.adv3Button.setEnabled(False)
-
-        self.advanceButton = QPushButton()
-        self.advanceButton.setIcon(
+        self.advanceButton = _create_button(
                 self.style().standardIcon(QStyle.SP_MediaSkipForward))
-        self.advanceButton.setEnabled(False)
-
-        self.goBack3Button = QPushButton()
-        self.goBack3Button.setIcon(
+        self.goBack3Button = _create_button(
                 self.style().standardIcon(QStyle.SP_ArrowLeft))
-        self.goBack3Button.setEnabled(False)
-
-        self.goBackButton = QPushButton()
-        self.goBackButton.setIcon(
+        self.goBackButton _ create_button(
                 self.style().standardIcon(QStyle.SP_MediaSkipBackward))
-        self.goBackButton.setEnabled(False)
-
+        self.cutButton = _create_button(self.style().standardIcon(
+            QStyle.SP_MessageBoxCritical))
         self.timeBox = QLabel(format_time(0), self)
         self.timeBox.setAlignment(Qt.AlignCenter)
         self.rateBox = QLabel(str(self.rate)+'x', self)
         self.rateBox.setAlignment(Qt.AlignCenter)
-
         self.labelSlider = LabelSliderWidget()
-
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 0)
-
-        self.cutButton = QPushButton()
-        self.cutButton.setEnabled(False)
-        self.cutButton.setIcon(self.style().standardIcon(
-            QStyle.SP_MessageBoxCritical))
 
     def create_menu_bar(self):
         openAction = create_action('open.png', '&Open', 'Ctrl+O', 'Open video',
@@ -161,7 +136,6 @@ class VideoWindow(QMainWindow):
     def make_control_layout(self):
         buttonsLayout = QHBoxLayout()
         buttonsLayout.setContentsMargins(0, 0, 0, 0)
-
         buttonsLayout.addWidget(self.timeBox)
         buttonsLayout.addWidget(self.slowDownButton)
         buttonsLayout.addWidget(self.goBackButton)
@@ -171,7 +145,6 @@ class VideoWindow(QMainWindow):
         buttonsLayout.addWidget(self.advanceButton)
         buttonsLayout.addWidget(self.speedUpButton)
         buttonsLayout.addWidget(self.rateBox)
-
         cutLayout = QHBoxLayout()
         cutLayout.setContentsMargins(0, 0, 0, 0)
         cutLayout.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Minimum,
@@ -179,7 +152,6 @@ class VideoWindow(QMainWindow):
         cutLayout.addWidget(self.cutButton)
         cutLayout.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Minimum,
             QSizePolicy.Minimum))
-
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.positionSlider)
@@ -194,24 +166,7 @@ class VideoWindow(QMainWindow):
         if rawFileName != '':
             fileName = TMP_VIDEO_PATH
             face_recog = UltraLightFaceRecog()
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
-            print('DEBUG: processando')
             face_recog.blur_faces(MODEL_PATH, rawFileName, fileName)
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-            print('DEBUG: PROCESSADO')
-
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.openedFile = os.path.basename(fileName)
@@ -329,6 +284,13 @@ class VideoWindow(QMainWindow):
         if state == QMediaPlayer.PlayingState or state == \
                 QMediaPlayer.PausedState:
             self.editorWidget.new_mark(self.mediaPlayer.position()/1000, label)
+
+
+def _create_button(icon):
+    button = QPushButton()
+    button.setIcon(icon)
+    button.setEnabled(False)
+    return button
 
 
 if __name__ == '__main__':
