@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
         QPushButton, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget,
         QTableWidget, QTableWidgetItem, QMainWindow, QAction,
-        QAbstractScrollArea, QShortcut)
+        QAbstractScrollArea, QShortcut, QSpacerItem)
 
 from utils import create_action, format_time
 from label_editor import BadClipsWidget
@@ -124,7 +124,8 @@ class VideoWindow(QMainWindow):
 
         self.cutButton = QPushButton()
         self.cutButton.setEnabled(False)
-        self.cutButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+        self.cutButton.setIcon(self.style().standardIcon(
+            QStyle.SP_MessageBoxCritical))
 
     def create_menu_bar(self):
         openAction = create_action('open.png', '&Open', 'Ctrl+O', 'Open video',
@@ -171,12 +172,20 @@ class VideoWindow(QMainWindow):
         buttonsLayout.addWidget(self.speedUpButton)
         buttonsLayout.addWidget(self.rateBox)
 
+        cutLayout = QHBoxLayout()
+        cutLayout.setContentsMargins(0, 0, 0, 0)
+        cutLayout.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Minimum,
+            QSizePolicy.Minimum))
+        cutLayout.addWidget(self.cutButton)
+        cutLayout.addSpacerItem(QSpacerItem(200, 5, QSizePolicy.Minimum,
+            QSizePolicy.Minimum))
+
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.positionSlider)
         layout.addWidget(self.labelSlider)
         layout.addLayout(buttonsLayout)
-        layout.addWidget(self.cutButton)
+        layout.addLayout(cutLayout)
         return layout
 
     def openFile(self):

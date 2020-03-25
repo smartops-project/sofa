@@ -69,7 +69,8 @@ class UltraLightFaceRecog:
 
         return box_scores[picked, :]
 
-    def predict(self, width, height, confidences, boxes, prob_threshold, iou_threshold=0.5, top_k=-1):
+    def predict(self, width, height, confidences, boxes, prob_threshold,
+            iou_threshold=0.5, top_k=-1):
         """
         Select boxes that contain human faces
         Args:
@@ -109,7 +110,8 @@ class UltraLightFaceRecog:
         picked_box_probs[:, 1] *= height
         picked_box_probs[:, 2] *= width
         picked_box_probs[:, 3] *= height
-        return picked_box_probs[:, :4].astype(np.int32), np.array(picked_labels), picked_box_probs[:, 4]
+        return picked_box_probs[:, :4].astype(np.int32), \
+                np.array(picked_labels), picked_box_probs[:, 4]
 
     def load_model(self, model_path):
         onnx_model = onnx.load(model_path)
@@ -118,10 +120,8 @@ class UltraLightFaceRecog:
         self.input_name = self.ort_session.get_inputs()[0].name
 
     def blur_faces(self, model_path, video_input, video_output):
-        
         self.load_model(model_path)
-        
-        # Video properties 
+        # Video properties
         video = cv2.VideoCapture(video_input)
         ret, frame = video.read()
         height , width , layers =  frame.shape
@@ -132,9 +132,8 @@ class UltraLightFaceRecog:
 
         while True:
             ret, frame = video.read()
-            
             if frame is not None:
-                frame = cv2.resize(frame, (new_w, new_h)) 
+                frame = cv2.resize(frame, (new_w, new_h))
                 h, w, _ = frame.shape
 
                 # preprocess img acquired
@@ -162,8 +161,6 @@ class UltraLightFaceRecog:
                 break
         self.save_local_video(all_frames, video_output, 30, size)
 
-
-
     def save_local_video(self, frames_array, filepath, speed, size):
         out = cv2.VideoWriter(filepath,cv2.VideoWriter_fourcc(*'DIVX'), round(speed), size)
         print("Frames array size: ", len(frames_array))
@@ -173,6 +170,7 @@ class UltraLightFaceRecog:
 
         out.release()
         print("> Video saved at ", filepath)
+
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser()
@@ -186,3 +184,5 @@ if __name__ == "__main__":
 
     face_recog = UltraLightFaceRecog()
     face_recog.blur_faces(args.model_path, args.video_input, args.video_output)
+
+
