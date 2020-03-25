@@ -266,6 +266,7 @@ class VideoWindow(QMainWindow):
         del self.shortcuts[keySeqStr]
 
     def saveClips(self):
+        # TODO
         suggestedName = os.path.splitext(self.openedFile)[0] + '.csv'
         fileUrl, _ = QFileDialog.getSaveFileUrl(self, QDir.homePath(),
                 QUrl.fromLocalFile(suggestedName))
@@ -280,6 +281,7 @@ class VideoWindow(QMainWindow):
 
     @pyqtSlot()
     def createMark(self, label):
+        # TODO
         state = self.mediaPlayer.state()
         if state == QMediaPlayer.PlayingState or state == \
                 QMediaPlayer.PausedState:
