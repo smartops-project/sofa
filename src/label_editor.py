@@ -7,15 +7,14 @@ from PyQt5.QtGui import QIcon, QColor
 
 from utils import format_time
 
-class LabelEditorWidget(QWidget):
+class BadClipsWidget(QWidget):
 
     def __init__(self):
-        super(LabelEditorWidget, self).__init__()
+        super(BadClipsWidget, self).__init__()
         self.title = 'Removed clips'
         self.default_color = None
         self.initUI()
         self.labels_state = {}
-
 
     def initUI(self):
         self.setWindowTitle(self.title)

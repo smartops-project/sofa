@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
         QAbstractScrollArea, QShortcut)
 
 from utils import create_action, format_time
-from label_editor import LabelEditorWidget
+from label_editor import BadClipsWidget
 from label_slider import LabelSliderWidget
 from signals import SignalBus
 
@@ -51,7 +51,7 @@ class VideoWindow(QMainWindow):
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         videoWidget = QVideoWidget()
-        self.editorWidget = LabelEditorWidget()
+        self.editorWidget = BadClipsWidget()
         self.create_control()
 
         self.playButton.clicked.connect(self.play)
@@ -117,6 +117,10 @@ class VideoWindow(QMainWindow):
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 0)
 
+        self.cutButton = QPushButton()
+        self.cutButton.setEnabled(False)
+        self.cutButton.setIcon(self.style().standardIcon(QStyle.SP_MediaPlay))
+
     def create_menu_bar(self):
         openAction = create_action('open.png', '&Open', 'Ctrl+O', 'Open video',
                 self.openFile, self)
@@ -167,6 +171,7 @@ class VideoWindow(QMainWindow):
         layout.addWidget(self.positionSlider)
         layout.addWidget(self.labelSlider)
         layout.addLayout(buttonsLayout)
+        layout.addWidget(self.cutButton)
         return layout
 
     def openFile(self):
@@ -177,7 +182,7 @@ class VideoWindow(QMainWindow):
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.openedFile = os.path.basename(fileName)
-            self.setWindowTitle("tofu - " + self.openedFile)
+            self.setWindowTitle("sofa - " + self.openedFile)
             self.playButton.setEnabled(True)
             self.speedUpButton.setEnabled(True)
             self.slowDownButton.setEnabled(True)
@@ -185,6 +190,7 @@ class VideoWindow(QMainWindow):
             self.adv3Button.setEnabled(True)
             self.goBackButton.setEnabled(True)
             self.goBack3Button.setEnabled(True)
+            self.cutButton.setEnabled(True)
             self.rate = 1
 
     def exitCall(self):
