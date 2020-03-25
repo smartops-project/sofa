@@ -160,7 +160,6 @@ class UltraLightFaceRecog:
                 all_frames.append(frame)
             else:
                 break
-        
         self.save_local_video(all_frames, video_output, 30, size)
 
 
@@ -168,7 +167,6 @@ class UltraLightFaceRecog:
     def save_local_video(self, frames_array, filepath, speed, size):
         out = cv2.VideoWriter(filepath,cv2.VideoWriter_fourcc(*'DIVX'), round(speed), size)
         print("Frames array size: ", len(frames_array))
-            
         for i in range(len(frames_array)):
             #cv2.imwrite('../tests/data/output/frames/frame_' + str(i) + '.png', frames_array[i])
             out.write(frames_array[i])
@@ -178,9 +176,12 @@ class UltraLightFaceRecog:
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser()
-    parser.add_argument('-i', '--video_input', help='Input video path', default= '', dest='video_input')
-    parser.add_argument('-o', '--video_output', help='Output video path', default= '', dest='video_output')
-    parser.add_argument('-m', '--model_path', help='Model path', default= './models/ultra_light_640.onnx', dest='model_path')
+    parser.add_argument('-i', '--video_input', help='Input video path',
+            default= '', dest='video_input')
+    parser.add_argument('-o', '--video_output', help='Output video path',
+            default= '', dest='video_output')
+    parser.add_argument('-m', '--model_path', help='Model path',
+            default= './models/ultra_light_640.onnx', dest='model_path')
     args = parser.parse_args()
 
     face_recog = UltraLightFaceRecog()

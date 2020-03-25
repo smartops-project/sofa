@@ -11,11 +11,16 @@ from utils import create_action, format_time
 from label_editor import BadClipsWidget
 from label_slider import LabelSliderWidget
 from signals import SignalBus
+from face_recog import UltraLightFaceRecog
 
 import sys
 import os
 import csv
 from functools import partial
+
+
+TMP_VIDEO_PATH = os.path.join(os.getcwd(), 'tmp_proc_video.mp4')
+MODEL_PATH = './models/ultra_light_640.onnx'
 
 
 class VideoWindow(QMainWindow):
@@ -175,10 +180,29 @@ class VideoWindow(QMainWindow):
         return layout
 
     def openFile(self):
-        fileName, _ = QFileDialog.getOpenFileName(self, "Open video",
+        rawFileName, _ = QFileDialog.getOpenFileName(self, "Open video",
                 QDir.homePath())
+        if rawFileName != '':
+            fileName = TMP_VIDEO_PATH
+            face_recog = UltraLightFaceRecog()
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            print('DEBUG: processando')
+            face_recog.blur_faces(MODEL_PATH, rawFileName, fileName)
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
+            print('DEBUG: PROCESSADO')
 
-        if fileName != '':
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.openedFile = os.path.basename(fileName)
