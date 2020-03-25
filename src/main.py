@@ -90,7 +90,7 @@ class VideoWindow(QMainWindow):
                 self.style().standardIcon(QStyle.SP_MediaSkipForward))
         self.goBack3Button = _create_button(
                 self.style().standardIcon(QStyle.SP_ArrowLeft))
-        self.goBackButton _ create_button(
+        self.goBackButton = _create_button(
                 self.style().standardIcon(QStyle.SP_MediaSkipBackward))
         self.cutButton = _create_button(self.style().standardIcon(
             QStyle.SP_MessageBoxCritical))
