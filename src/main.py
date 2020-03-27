@@ -8,8 +8,8 @@ from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
         QAbstractScrollArea, QShortcut, QSpacerItem)
 
 from utils import create_action, format_time
-from label_editor import BadClipsWidget
-from label_slider import LabelSliderWidget
+from bad_clips_table import BadClipsWidget
+from bad_clips_slider import LabelSliderWidget
 from signals import SignalBus
 from face_recog import UltraLightFaceRecog
 
