@@ -1,5 +1,6 @@
 venv/
 activate
 *.swp
+.*.swo
 __pycache__/
 tmp_proc_video.mp4
