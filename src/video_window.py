@@ -1,11 +1,11 @@
 from PyQt5.QtCore import QDir, Qt, QUrl, pyqtSlot, pyqtSignal
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
-from PyQt5.QtGui import QIcon, QKeySequence, QPalette, QColor
-from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
-        QPushButton, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget,
-        QTableWidget, QTableWidgetItem, QMainWindow, QAction,
-        QAbstractScrollArea, QShortcut, QSpacerItem)
+from PyQt5.QtGui import QIcon, QKeySequence
+from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QPushButton,
+        QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, QTableWidget,
+        QTableWidgetItem, QMainWindow, QAction, QAbstractScrollArea, QShortcut,
+        QSpacerItem, QProgressBar)
 
 from utils import create_action, format_time
 from bad_clips_table import BadClipsWidget
@@ -13,7 +13,6 @@ from bad_clips_slider import LabelSliderWidget
 from signals import SignalBus
 from face_recog import UltraLightFaceRecog
 
-import sys
 import os
 import csv
 from functools import partial
@@ -30,9 +29,8 @@ class VideoWindow(QMainWindow):
         self.setWindowTitle("sofa")
         self.setWindowIcon(QIcon('src/static/img/tofu.png'))
         self.comm = SignalBus.instance()
-        self.comm.newLabelSignal.connect(self.bindLabelEvent)
-        self.comm.delLabelSignal.connect(self.unbindLabelEvent)
         self.rate = 1
+        self.isNewMark = False
         self.initUI()
         self.set_default_shortcuts()
         self.shortcuts = {}
@@ -56,7 +54,7 @@ class VideoWindow(QMainWindow):
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         videoWidget = QVideoWidget()
-        self.editorWidget = BadClipsWidget()
+        self.clipsWidget = BadClipsWidget()
         self.create_control()
 
         self.playButton.clicked.connect(self.play)
@@ -67,6 +65,7 @@ class VideoWindow(QMainWindow):
         self.advanceButton.clicked.connect(partial(self.advance, 10))
         self.goBackButton.clicked.connect(partial(self.back, 10))
         self.positionSlider.sliderMoved.connect(self.setPosition)
+        self.cutButton.clicked.connect(self.createMark)
 
         return videoWidget
 
@@ -76,6 +75,7 @@ class VideoWindow(QMainWindow):
         self.slowDownButton.setShortcut(QKeySequence(Qt.Key_Down))
         self.advanceButton.setShortcut(QKeySequence(Qt.Key_Right))
         self.goBackButton.setShortcut(QKeySequence(Qt.Key_Left))
+        self.cutButton.setShortcut(QKeySequence(Qt.Key_C))
 
     def create_control(self):
         self.playButton = _create_button(
@@ -118,7 +118,7 @@ class VideoWindow(QMainWindow):
 
     def set_layout(self, videoWidget, wid):
         labellingLayout = QVBoxLayout()
-        labellingLayout.addWidget(self.editorWidget)
+        labellingLayout.addWidget(self.clipsWidget)
 
         controlLayout = self.make_control_layout()
 
@@ -165,6 +165,7 @@ class VideoWindow(QMainWindow):
                 QDir.homePath())
         if rawFileName != '':
             fileName = TMP_VIDEO_PATH
+            # TODO: separeted thread
             face_recog = UltraLightFaceRecog()
             face_recog.blur_faces(MODEL_PATH, rawFileName, fileName)
             self.mediaPlayer.setMedia(
@@ -254,17 +255,6 @@ class VideoWindow(QMainWindow):
         self.goBackButton.setEnabled(False)
         self.errorLabel.setText("Error: " + self.mediaPlayer.errorString())
 
-    def bindLabelEvent(self, keySeq, label):
-        bind = QAction(label, self)
-        bind.setShortcut(keySeq)
-        bind.triggered.connect(partial(self.createMark, label))
-        self.shortcuts[keySeq.toString()] = bind
-        self.addAction(bind)
-
-    def unbindLabelEvent(self, keySeqStr):
-        self.removeAction(self.shortcuts[keySeqStr])
-        del self.shortcuts[keySeqStr]
-
     def saveClips(self):
         # TODO
         suggestedName = os.path.splitext(self.openedFile)[0] + '.csv'
@@ -276,16 +266,17 @@ class VideoWindow(QMainWindow):
             with open(fileName, mode='w') as csv_file:
                 writer = csv.writer(csv_file, delimiter=',', quotechar='"',
                         quoting=csv.QUOTE_MINIMAL)
-                marks = self.editorWidget.get_marks()
+                marks = self.clipsWidget.get_marks()
                 writer.writerows(marks)
 
     @pyqtSlot()
-    def createMark(self, label):
-        # TODO
+    def createMark(self):
         state = self.mediaPlayer.state()
         if state == QMediaPlayer.PlayingState or state == \
                 QMediaPlayer.PausedState:
-            self.editorWidget.new_mark(self.mediaPlayer.position()/1000, label)
+            self.clipsWidget.new_mark(self.mediaPlayer.position()/1000,
+                    self.isNewMark)
+            self.isNewMark = not self.isNewMark
 
 
 def _create_button(icon):
@@ -293,28 +284,5 @@ def _create_button(icon):
     button.setIcon(icon)
     button.setEnabled(False)
     return button
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    app.setStyle('Fusion')
-    palette = QPalette()
-    palette.setColor(QPalette.Window, QColor(53,53,53))
-    palette.setColor(QPalette.WindowText, Qt.white)
-    palette.setColor(QPalette.Base, QColor(15,15,15))
-    palette.setColor(QPalette.AlternateBase, QColor(53,53,53))
-    palette.setColor(QPalette.ToolTipBase, Qt.white)
-    palette.setColor(QPalette.ToolTipText, Qt.white)
-    palette.setColor(QPalette.Text, Qt.white)
-    palette.setColor(QPalette.Button, QColor(53,53,53))
-    palette.setColor(QPalette.ButtonText, Qt.white)
-    palette.setColor(QPalette.BrightText, Qt.red)
-    palette.setColor(QPalette.Highlight, QColor(142,45,197).lighter())
-    palette.setColor(QPalette.HighlightedText, Qt.black)
-    app.setPalette(palette)
-    player = VideoWindow()
-    player.resize(940, 480)
-    player.show()
-    sys.exit(app.exec_())
 
 

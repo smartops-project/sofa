@@ -14,7 +14,7 @@ class BadClipsWidget(QWidget):
         self.title = 'Removed clips'
         self.default_color = None
         self.initUI()
-        self.labels_state = {}
+        self.currentRow = 0
 
     def initUI(self):
         self.setWindowTitle(self.title)
@@ -33,23 +33,24 @@ class BadClipsWidget(QWidget):
             ''])
         self.tableWidget.resizeColumnsToContents()
 
-    def new_mark(self, time, label):
-        mode = self.__toggle_label_mode(label)
+    def new_mark(self, time, mode):
+        index = self.currentRow
         if not mode:
-            start_or_stop = 1
+            start_or_stop = 0
             index = self.tableWidget.rowCount()-1
-            self.tableWidget.setItem(index, 0, QTableWidgetItem(str(label)))
-            self.tableWidget.setItem(index, 2, QTableWidgetItem('...'))
+            self.tableWidget.setItem(index, 1, QTableWidgetItem('...'))
+            duration = '...'
             if not self.default_color:
                 self.default_color = \
-                        self.tableWidget.item(index, 0).background()
+                        self.tableWidget.item(index, 1).background()
             self.tableWidget.insertRow(index+1)
         else:
-            start_or_stop = 2
-            matches = self.tableWidget.findItems(label, Qt.MatchExactly)
-            index = matches[-1].row()
+            start_or_stop = 1
+            self.currentRow += 1
+            duration = 'eita'
         timeItem = QTableWidgetItem(format_time(time))
         self.tableWidget.setItem(index, start_or_stop, timeItem)
+        self.tableWidget.setItem(index, 2, QTableWidgetItem(duration))
         delButton = QPushButton()
         delButton.setIcon(self.style().standardIcon(QStyle.SP_TrashIcon))
         delButton.clicked.connect(self.deleteRow)
@@ -64,6 +65,7 @@ class BadClipsWidget(QWidget):
         if button:
             row = self.tableWidget.indexAt(button.pos()).row()
             self.tableWidget.removeRow(row)
+            self.currentRow -= 1
 
     def set_row_color(self, index, mode):
         t = self.tableWidget
@@ -83,13 +85,6 @@ class BadClipsWidget(QWidget):
             return self.tableWidget.item(i, j).text()
         except:
             return 'ERROR_INVALID_VALUE'
-
-    def __toggle_label_mode(self, label):
-        if label not in self.labels_state:
-            self.labels_state[label] = False
-        mode = self.labels_state[label]
-        self.labels_state[label] = not self.labels_state[label]
-        return mode
 
     def __row_colors(self, i, color):
         for ii in range(self.tableWidget.columnCount()-1):
