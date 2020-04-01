@@ -275,7 +275,7 @@ class VideoWindow(QMainWindow):
                         begin_time, end_time, targetname=out_path)
                 begin_time = float(m[1])
             end_video = self.mediaPlayer.duration()/1000
-            if begin_time < end_video:
+            if begin_time < end_video and len(marks) > 0:
                 i = len(marks)
                 out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
                 ffmpeg_extract_subclip(self.fileName,
