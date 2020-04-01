@@ -4,7 +4,8 @@ from PyQt5.QtGui import QKeySequence
 
 class SignalBus(QObject):
     __instance = None
-    newLabelSignal = pyqtSignal(QKeySequence, str)
+    updProgress = pyqtSignal(float)
+    videoProcessed = pyqtSignal()
     uptLabelSlicer = pyqtSignal(int, str)
 
     @staticmethod

@@ -10,30 +10,32 @@ from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QPushButton,
 from utils import create_action, format_time
 from bad_clips_table import BadClipsWidget
 from bad_clips_slider import LabelSliderWidget
+from proc_bar_dialog import ProcVideoDialog
 from signals import SignalBus
-from face_recog import UltraLightFaceRecog
 
 import os
 import csv
+import sys
 from functools import partial
 
 
-TMP_VIDEO_PATH = os.path.join(os.getcwd(), 'tmp_proc_video.mp4')
-MODEL_PATH = './models/ultra_light_640.onnx'
+TMP_VIDEO_PATH = os.path.join(QDir.homePath(), 'tmp_proc_video.mp4')
 
 
 class VideoWindow(QMainWindow):
 
-    def __init__(self, parent=None):
+    def __init__(self, app, parent=None):
         super(VideoWindow, self).__init__(parent)
+        self.app = app
         self.setWindowTitle("sofa")
         self.setWindowIcon(QIcon('src/static/img/tofu.png'))
-        self.comm = SignalBus.instance()
         self.rate = 1
         self.isNewMark = False
+        self.openedFile = None
         self.initUI()
         self.set_default_shortcuts()
         self.shortcuts = {}
+        self.comm = SignalBus.instance()
 
     def initUI(self):
         videoWidget = self.create_player()
@@ -161,29 +163,33 @@ class VideoWindow(QMainWindow):
         return layout
 
     def openFile(self):
-        rawFileName, _ = QFileDialog.getOpenFileName(self, "Open video",
+        self.rawFileName, _ = QFileDialog.getOpenFileName(self, "Open video",
                 QDir.homePath())
-        if rawFileName != '':
-            fileName = TMP_VIDEO_PATH
-            # TODO: separeted thread
-            face_recog = UltraLightFaceRecog()
-            face_recog.blur_faces(MODEL_PATH, rawFileName, fileName)
-            self.mediaPlayer.setMedia(
-                    QMediaContent(QUrl.fromLocalFile(fileName)))
-            self.openedFile = os.path.basename(fileName)
-            self.setWindowTitle("sofa - " + self.openedFile)
-            self.playButton.setEnabled(True)
-            self.speedUpButton.setEnabled(True)
-            self.slowDownButton.setEnabled(True)
-            self.advanceButton.setEnabled(True)
-            self.adv3Button.setEnabled(True)
-            self.goBackButton.setEnabled(True)
-            self.goBack3Button.setEnabled(True)
-            self.cutButton.setEnabled(True)
-            self.rate = 1
+        if self.rawFileName != '':
+            self.fileName = TMP_VIDEO_PATH
+            process = ProcVideoDialog(self.rawFileName, self.fileName, self)
+            self.comm.videoProcessed.connect(self.openMedia)
+
+    @pyqtSlot()
+    def openMedia(self):
+        self.mediaPlayer.setMedia(
+                QMediaContent(QUrl.fromLocalFile(self.fileName)))
+        self.openedFile = os.path.basename(self.fileName)
+        self.setWindowTitle("sofa - " + self.openedFile)
+        self.playButton.setEnabled(True)
+        self.speedUpButton.setEnabled(True)
+        self.slowDownButton.setEnabled(True)
+        self.advanceButton.setEnabled(True)
+        self.adv3Button.setEnabled(True)
+        self.goBackButton.setEnabled(True)
+        self.goBack3Button.setEnabled(True)
+        self.cutButton.setEnabled(True)
+        self.rate = 1
 
     def exitCall(self):
-        sys.exit(app.exec_())
+        if self.openedFile is not None:
+            os.remove(self.fileName)
+        sys.exit(self.app.exec_())
 
     def play(self):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:

@@ -5,7 +5,17 @@ import onnxruntime as ort
 from onnx_tf.backend import prepare
 import argparse
 
+from signals import SignalBus
+
+
+MODEL_PATH = './models/ultra_light_640.onnx'
+
+
 class UltraLightFaceRecog:
+    def __init__(self):
+        self.comm = SignalBus.instance()
+        self.running = True
+
     def area_of(self, left_top, right_bottom):
         """
         Compute the areas of rectangles given two corners.
@@ -83,7 +93,8 @@ class UltraLightFaceRecog:
         Returns:
             boxes (k, 4): an array of boxes kept
             labels (k): an array of labels for each boxes kept
-            probs (k): an array of probabilities for each boxes being in corresponding labels
+            probs (k): an array of probabilities for each boxes being in
+            corresponding labels
         """
         boxes = boxes[0]
         confidences = confidences[0]
@@ -119,49 +130,56 @@ class UltraLightFaceRecog:
         self.ort_session = ort.InferenceSession(model_path)
         self.input_name = self.ort_session.get_inputs()[0].name
 
-    def blur_faces(self, model_path, video_input, video_output):
-        self.load_model(model_path)
-        # Video properties
+    def stop(self):
+        self.running = False
+
+    def blur_faces(self, video_input, video_output):
+        self.load_model(MODEL_PATH)
         video = cv2.VideoCapture(video_input)
+        n_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_ctr = 0
         ret, frame = video.read()
         height , width , layers =  frame.shape
         new_h = height//2
         new_w = width//2
         size = (new_w, new_h)
         all_frames = []
-
-        while True:
+        while self.running:
             ret, frame = video.read()
+            frame_ctr += 1
+            self.comm.updProgress.emit(100*frame_ctr/n_frames)
             if frame is not None:
                 frame = cv2.resize(frame, (new_w, new_h))
                 h, w, _ = frame.shape
-
-                # preprocess img acquired
-                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert bgr to rgb
-                img = cv2.resize(img, (640, 480)) # resize
+                img = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = cv2.resize(img, (640, 480))
                 img_mean = np.array([127, 127, 127])
                 img = (img - img_mean) / 128
                 img = np.transpose(img, [2, 0, 1])
                 img = np.expand_dims(img, axis=0)
                 img = img.astype(np.float32)
 
-                confidences, boxes = self.ort_session.run(None, {self.input_name: img})
-                boxes, labels, probs = self.predict(w, h, confidences, boxes, 0.7)
-
+                confidences, boxes = self.ort_session.run(None,
+                        {self.input_name: img})
+                boxes, labels, probs = self.predict(w, h, confidences, boxes,
+                        0.7)
                 for i in range(boxes.shape[0]):
                     box = boxes[i, :]
                     x1, y1, x2, y2 = box
-                    cv2.rectangle(frame, (x1-10, y1-10), (x2+10, y2+10), (0,0,0), -1)
+                    cv2.rectangle(frame, (x1-10, y1-10), (x2+10, y2+10),
+                            (0,0,0), -1)
                 all_frames.append(frame)
             else:
                 break
-        self.save_local_video(all_frames, video_output, 30, size)
+        if self.running:
+            self.save_local_video(all_frames, video_output, 30, size)
+            self.comm.videoProcessed.emit()
 
     def save_local_video(self, frames_array, filepath, speed, size):
-        out = cv2.VideoWriter(filepath,cv2.VideoWriter_fourcc(*'DIVX'), round(speed), size)
+        out = cv2.VideoWriter(filepath,cv2.VideoWriter_fourcc(*'mp4v'),
+                round(speed), size)
         print("Frames array size: ", len(frames_array))
         for i in range(len(frames_array)):
-            #cv2.imwrite('../tests/data/output/frames/frame_' + str(i) + '.png', frames_array[i])
             out.write(frames_array[i])
 
         out.release()
@@ -174,11 +192,9 @@ if __name__ == "__main__":
             default= '', dest='video_input')
     parser.add_argument('-o', '--video_output', help='Output video path',
             default= '', dest='video_output')
-    parser.add_argument('-m', '--model_path', help='Model path',
-            default= './models/ultra_light_640.onnx', dest='model_path')
     args = parser.parse_args()
 
     face_recog = UltraLightFaceRecog()
-    face_recog.blur_faces(args.model_path, args.video_input, args.video_output)
+    face_recog.blur_faces(args.video_input, args.video_output)
 
 

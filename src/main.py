@@ -24,7 +24,7 @@ if __name__ == '__main__':
     palette.setColor(QPalette.Highlight, QColor(142,45,197).lighter())
     palette.setColor(QPalette.HighlightedText, Qt.black)
     app.setPalette(palette)
-    player = VideoWindow()
+    player = VideoWindow(app)
     player.resize(940, 480)
     player.show()
     sys.exit(app.exec_())
