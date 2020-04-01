@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (QLabel, QDialog, QFormLayout, QGroupBox,
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtGui import QIcon, QColor
 
-from utils import format_time
 
 class BadClipsWidget(QWidget):
 
@@ -48,7 +47,7 @@ class BadClipsWidget(QWidget):
             start_or_stop = 1
             self.currentRow += 1
             duration = 'eita'
-        timeItem = QTableWidgetItem(format_time(time))
+        timeItem = QTableWidgetItem(str(time))
         self.tableWidget.setItem(index, start_or_stop, timeItem)
         self.tableWidget.setItem(index, 2, QTableWidgetItem(duration))
         delButton = QPushButton()

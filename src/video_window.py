@@ -14,9 +14,9 @@ from proc_bar_dialog import ProcVideoDialog
 from signals import SignalBus
 
 import os
-import csv
 import sys
 from functools import partial
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
 
 TMP_VIDEO_PATH = os.path.join(QDir.homePath(), 'tmp_proc_video.mp4')
@@ -107,7 +107,7 @@ class VideoWindow(QMainWindow):
     def create_menu_bar(self):
         openAction = create_action('open.png', '&Open', 'Ctrl+O', 'Open video',
                 self.openFile, self)
-        csvAction = create_action('save.png', '&Save Clips', 'Ctrl+S',
+        saveAction = create_action('save.png', '&Save Clips', 'Ctrl+S',
                 'Save anonimized clips', self.saveClips, self)
         exitAction = create_action('exit.png', '&Exit', 'Ctrl+Q', 'Exit',
                 self.exitCall, self)
@@ -115,7 +115,7 @@ class VideoWindow(QMainWindow):
         menuBar = self.menuBar()
         fileMenu = menuBar.addMenu('&File')
         fileMenu.addAction(openAction)
-        fileMenu.addAction(csvAction)
+        fileMenu.addAction(saveAction)
         fileMenu.addAction(exitAction)
 
     def set_layout(self, videoWidget, wid):
@@ -262,18 +262,24 @@ class VideoWindow(QMainWindow):
         self.errorLabel.setText("Error: " + self.mediaPlayer.errorString())
 
     def saveClips(self):
-        # TODO
-        suggestedName = os.path.splitext(self.openedFile)[0] + '.csv'
-        fileUrl, _ = QFileDialog.getSaveFileUrl(self, QDir.homePath(),
-                QUrl.fromLocalFile(suggestedName))
-        fileName = fileUrl.toLocalFile()
-
-        if fileName != '':
-            with open(fileName, mode='w') as csv_file:
-                writer = csv.writer(csv_file, delimiter=',', quotechar='"',
-                        quoting=csv.QUOTE_MINIMAL)
-                marks = self.clipsWidget.get_marks()
-                writer.writerows(marks)
+        prefix = os.path.splitext(os.path.basename(self.rawFileName))[0] + \
+                '_slice_'
+        dirPath = QFileDialog.getExistingDirectory(self, 'Select Dir')
+        if dirPath != '':
+            marks = self.clipsWidget.get_marks()
+            begin_time = 0.0
+            for i, m in enumerate(marks):
+                end_time = float(m[0])
+                out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
+                ffmpeg_extract_subclip(self.fileName,
+                        begin_time, end_time, targetname=out_path)
+                begin_time = float(m[1])
+            end_video = self.mediaPlayer.duration()/1000
+            if begin_time < end_video:
+                i = len(marks)
+                out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
+                ffmpeg_extract_subclip(self.fileName,
+                        begin_time, end_video, targetname=out_path)
 
     @pyqtSlot()
     def createMark(self):
