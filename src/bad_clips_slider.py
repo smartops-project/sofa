@@ -1,24 +1,25 @@
 import sys
 from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
                              QHBoxLayout, QVBoxLayout)
-from PyQt5.QtCore    import QObject, Qt, pyqtSignal
-from PyQt5.QtGui     import QPainter, QFont, QColor, QPen
+from PyQt5.QtCore import QObject, Qt, pyqtSignal
+from PyQt5.QtGui import QPainter, QFont, QColor, QPen
 
-from signals import SignalBus
 
-class LabelSliderWidget(QWidget):
+class HlightRmClipsWidget(QWidget):
 
     def __init__(self):
-        super(LabelSliderWidget, self).__init__()
+        super(HlightRmClipsWidget, self).__init__()
+        self.video_len = 8
+        self.isRemoved = False
         self.initUI()
 
     def initUI(self):
         self.setMinimumSize(170, 30)
-        self.value = 2
-        self.num   = [2, 4, 6, 8]
+        self.value = 0
 
-    def setValue(self, value):
+    def setValue(self, value: int):
         self.value = value
+        self.repaint()
 
     def paintEvent(self, e):
         qp = QPainter()
@@ -26,19 +27,25 @@ class LabelSliderWidget(QWidget):
         self.drawWidget(qp)
         qp.end()
 
+    def setRange(self, r):
+        self.video_len = r
+        self.repaint()
+
+    def toggleRm(self):
+        self.isRemoved = not self.isRemoved
+
     def drawWidget(self, qp):
-        MAX_CAPACITY  = 8
-        OVER_CAPACITY = 10
+        MAX_CAPACITY = 8
+        OVER_CAPACITY = self.video_len
         font = QFont('Serif', 7, QFont.Light)
         qp.setFont(font)
         size = self.size()
-        w    = size.width()
-        h    = size.height()
+        w = size.width()
+        h = size.height()
         step = int(round(w / 5))
         till = int(((w / OVER_CAPACITY) * self.value))
         full = int(((w / OVER_CAPACITY) * MAX_CAPACITY))
-
-        if self.value >= MAX_CAPACITY:
+        if self.isRemoved:
             qp.setPen(QColor(255, 255, 255))
             qp.setBrush(QColor(255, 255, 184))
             qp.drawRect(0, 0, full, h)
@@ -49,19 +56,11 @@ class LabelSliderWidget(QWidget):
             qp.setPen(QColor(255, 255, 255))
             qp.setBrush(QColor(255, 255, 184))
             qp.drawRect(0, 0, till, h)
-
         pen = QPen(QColor(20, 20, 20), 1, Qt.SolidLine)
         qp.setPen(pen)
         qp.setBrush(Qt.NoBrush)
         qp.drawRect(0, 0, w-1, h-1)
         j = 0
-
-        for i in range(step, 5*step, step):
-            qp.drawLine(i, 0, i, 5)
-            metrics = qp.fontMetrics()
-            fw = metrics.width(str(self.num[j]))
-            qp.drawText(i-fw/2, h/2, str(self.num[j]))
-            j = j + 1
 
 
 class Example(QWidget):
@@ -76,7 +75,7 @@ class Example(QWidget):
         sld.setRange(0, OVER_CAPACITY)
         sld.setValue(2)
 
-        self.c   = Communicate()
+        self.c = Communicate()
         self.wid = BurningWidget()
 
         self.c.updateBW[int].connect(self.wid.setValue)

@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QPushButton,
 
 from utils import create_action, format_time
 from bad_clips_table import BadClipsWidget
-from bad_clips_slider import LabelSliderWidget
+from bad_clips_slider import HlightRmClipsWidget
 from proc_bar_dialog import ProcVideoDialog
 from signals import SignalBus
 
@@ -68,6 +68,7 @@ class VideoWindow(QMainWindow):
         self.goBackButton.clicked.connect(partial(self.back, 10))
         self.positionSlider.sliderMoved.connect(self.setPosition)
         self.cutButton.clicked.connect(self.createMark)
+        self.cutButton.clicked.connect(self.hlightSlider.toggleRm)
 
         return videoWidget
 
@@ -98,9 +99,9 @@ class VideoWindow(QMainWindow):
             QStyle.SP_MessageBoxCritical))
         self.timeBox = QLabel(format_time(0), self)
         self.timeBox.setAlignment(Qt.AlignCenter)
-        self.rateBox = QLabel(str(self.rate)+'x', self)
+        self.rateBox = QLabel(str(self.rate) + 'x', self)
         self.rateBox.setAlignment(Qt.AlignCenter)
-        self.labelSlider = LabelSliderWidget()
+        self.hlightSlider = HlightRmClipsWidget()
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 0)
 
@@ -157,7 +158,7 @@ class VideoWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.positionSlider)
-        layout.addWidget(self.labelSlider)
+        layout.addWidget(self.hlightSlider)
         layout.addLayout(buttonsLayout)
         layout.addLayout(cutLayout)
         return layout
@@ -245,10 +246,12 @@ class VideoWindow(QMainWindow):
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
+        self.hlightSlider.setValue(position)
         self.timeBox.setText(format_time(int(position/1000)))
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
+        self.hlightSlider.setRange(duration)
 
     def setPosition(self, position):
         self.mediaPlayer.setPosition(position)
