@@ -10,23 +10,26 @@ which the algorithm wasn't succesfull
 
 ## Installation
 
-### Windows
+### Windows 10
 
-* Install <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe">Python 3.6</a>
-* Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>
+#### Requirements
+
+* Install <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe">Python 3.6</a>;
+* Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>.
 
 
 #### Dev version
 
-* Download the file <a href="https://github.com/smartops-project/sofa/archive/master.zip">master.zip</a>
-* unzip it
-* run install.bat
-* run sofa.bat
+* Download <a href="https://github.com/smartops-project/sofa/archive/master.zip">master.zip</a>;
+* unzip it;
+* run install.bat;
+* run sofa.bat.
 
 #### Release
 
-* Download the file <a href="https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing">sofa_install.zip</a>
-* run `sofaSetup.exe`
+* Download the file <a href="https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing">sofa_install.zip</a>;
+* unzip it;
+* run `sofaSetup.exe`.
 
 ### Ubuntu
 
