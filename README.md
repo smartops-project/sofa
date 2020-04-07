@@ -27,7 +27,7 @@ which the algorithm wasn't succesfull
 
 #### Release
 
-* Download <a href="https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing">install_sofa.zip</a>;
+* Download <a href="https://drive.google.com/file/d/13li4G7q_YO7gtTiecWFdjkrl9kCUeyK7/view?usp=sharing">install_sofa.zip</a>;
 * unzip it;
 * run `sofaSetup.exe`.
 
