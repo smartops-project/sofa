@@ -25,7 +25,7 @@ which the algorithm wasn't succesfull
 
 #### Release
 
-* Download the file ![sofa_install.zip](https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing)
+* Download the file <a href="https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing">sofa_install.zip</a>
 * run `sofaSetup.exe`
 
 ### Ubuntu
