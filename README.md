@@ -17,7 +17,7 @@ which the algorithm wasn't succesfull
 * Install <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe">Python 3.6</a>;
 * Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>.
 
-> When installing Python, remember to add checkout the box asking if you want to add it to your `PATH`.
+> When installing Python, remember to checkout the box for adding it to your `PATH`.
 
 
 #### Dev version
