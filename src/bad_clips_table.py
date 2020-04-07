@@ -46,7 +46,8 @@ class BadClipsWidget(QWidget):
         else:
             start_or_stop = 1
             self.currentRow += 1
-            duration = 'eita'
+            begin = float(self.tableWidget.item(index, 0).text())
+            duration = str(round(time - begin, 2))
         timeItem = QTableWidgetItem(str(time))
         self.tableWidget.setItem(index, start_or_stop, timeItem)
         self.tableWidget.setItem(index, 2, QTableWidgetItem(duration))
@@ -88,5 +89,3 @@ class BadClipsWidget(QWidget):
     def __row_colors(self, i, color):
         for ii in range(self.tableWidget.columnCount()-1):
             self.tableWidget.item(i, ii).setBackground(color)
-
-
