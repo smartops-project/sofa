@@ -10,7 +10,26 @@ which the algorithm wasn't succesfull
 
 ## Installation
 
+### Windows
+
+* Install ![Python 3.6](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe)
+* Install ![k-lite codecs](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe)
+
+#### Dev version
+
+* Download the file ![sofa.zip](https://github.com/smartops-project/sofa/archive/master.zip)
+* unzip it
+* run install.bat
+* run sofa.bat
+
+#### Release
+
+* Download the file `releases\sofa_install.zip`
+* run `sofaSetup.exe`
+
 ### Ubuntu
+
+#### Dev version
 
 If you are planning to play *MP4* or any other proprietary formats, you need
 to install the following packages:
@@ -32,15 +51,3 @@ $ source venv/bin/activate
 $ pip install -U pip
 $ pip install -r requirements.txt
 ```
-
-
-### Windows
-
-> TODO: Not tested yet... All contributions are welcome.
-
-
-## Usage
-
-> TODO
-
-
