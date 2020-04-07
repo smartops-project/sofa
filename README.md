@@ -12,19 +12,20 @@ which the algorithm wasn't succesfull
 
 ### Windows
 
-* Install ![Python 3.6](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe)
-* Install ![k-lite codecs](https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe)
+* Install <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe">Python 3.6</a>
+* Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>
+
 
 #### Dev version
 
-* Download the file ![sofa.zip](https://github.com/smartops-project/sofa/archive/master.zip)
+* Download the file <a href="https://github.com/smartops-project/sofa/archive/master.zip">master.zip</a>
 * unzip it
 * run install.bat
 * run sofa.bat
 
 #### Release
 
-* Download the file `releases\sofa_install.zip`
+* Download the file ![sofa_install.zip](https://drive.google.com/drive/folders/1iG3_ZRW80emiX2nW6Gm-G3elYRg-bbkm?usp=sharing)
 * run `sofaSetup.exe`
 
 ### Ubuntu
