@@ -299,5 +299,3 @@ def _create_button(icon):
     button.setIcon(icon)
     button.setEnabled(False)
     return button
-
-

@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
+
 from PyQt5.QtGui import QPalette, QColor
 
 
@@ -28,5 +29,3 @@ if __name__ == '__main__':
     player.resize(940, 480)
     player.show()
     sys.exit(app.exec_())
-
-
