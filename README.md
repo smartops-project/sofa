@@ -15,7 +15,8 @@ which the algorithm wasn't succesfull
 #### Requirements
 
 * Install <a href="https://www.python.org/ftp/python/3.6.8/python-3.6.8-amd64.exe">Python 3.6</a>;
-* Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>.
+* Install <a href="https://codecguide.com/download_kl.htm">k-lite codecs</a>;
+* Install <a href="https://www.microsoft.com/pt-br/download/details.aspx?id=52685">Visual C++ 2015</a>.
 
 > When installing Python, remember to checkout the box for adding it to your `PATH`.
 
