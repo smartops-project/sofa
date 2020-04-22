@@ -16,7 +16,7 @@ from signals import SignalBus
 import os
 import sys
 from functools import partial
-from moviepy import VideoClipFile
+from moviepy import VideoFileClip
 
 
 TMP_VIDEO_PATH = os.path.join(QDir.homePath(), 'tmp_proc_video.mp4')
