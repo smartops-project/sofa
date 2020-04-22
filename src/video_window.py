@@ -126,6 +126,7 @@ class VideoWindow(QMainWindow):
         controlLayout = self.make_control_layout()
 
         videoAreaLayout = QVBoxLayout()
+        videoWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         videoAreaLayout.addWidget(videoWidget)
         videoAreaLayout.addLayout(controlLayout)
         videoAreaLayout.addWidget(self.errorLabel)
