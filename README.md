@@ -33,14 +33,6 @@ You should install the following packages before installing the **DEV** version 
 * run install.bat;
 * run sofa.bat.
 
-#### BIN version (alpha)
-
-> The installer results on a non functional version of Sofa. Please, use DEV version.
-
-* Download <a href="https://drive.google.com/file/d/13li4G7q_YO7gtTiecWFdjkrl9kCUeyK7/view?usp=sharing">install_sofa.zip</a>;
-* unzip it;
-* run `sofaSetup.exe`.
-
 ### Ubuntu
 
 #### DEV version
