@@ -293,12 +293,11 @@ class VideoWindow(QMainWindow):
                             begin_time, end_video, targetname=out_path)
                 QMessageBox.information(self.wid, 'Sucess',
                         'Clips succesfuly saved')
-                self.errorLabel.setText('Clips saved at ' driPath)
+                self.errorLabel.setText('Clips saved at ' + dirPath)
             except:
                 QMessageBox.warning(self.wid, 'Error',
                         'Could not save file. Check permissions')
-                self.errorLabel.setText('Error: ' + \
-                        'Could not save file. Check permissions')
+                self.errorLabel.setText('Error: Could not save file.')
 
     @pyqtSlot()
     def createMark(self):
