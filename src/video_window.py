@@ -278,6 +278,7 @@ class VideoWindow(QMainWindow):
         dirPath = QFileDialog.getExistingDirectory(self, 'Select Dir')
         if dirPath != '':
             try:
+                self.errorLabel.setText('Saving clips... please wait')
                 video = VideoFileClip(self.fileName)
                 marks = self.clipsWidget.get_marks()
                 begin_time = 0.0
