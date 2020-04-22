@@ -16,7 +16,7 @@ from signals import SignalBus
 import os
 import sys
 from functools import partial
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+from moviepy import VideoClipFile
 
 
 TMP_VIDEO_PATH = os.path.join(QDir.homePath(), 'tmp_proc_video.mp4')
@@ -278,20 +278,21 @@ class VideoWindow(QMainWindow):
         dirPath = QFileDialog.getExistingDirectory(self, 'Select Dir')
         if dirPath != '':
             try:
+                video = VideoFileClip(self.fileName)
                 marks = self.clipsWidget.get_marks()
                 begin_time = 0.0
                 for i, m in enumerate(marks):
                     end_time = float(m[0])
                     out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
-                    ffmpeg_extract_subclip(self.fileName,
-                            begin_time, end_time, targetname=out_path)
+                    clip = video.subclip(begin_time, end_time)
+                    clip.write(out_path)
                     begin_time = float(m[1])
                 end_video = self.mediaPlayer.duration()/1000
                 if begin_time < end_video and len(marks) > 0:
                     i = len(marks)
                     out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
-                    ffmpeg_extract_subclip(self.fileName,
-                            begin_time, end_video, targetname=out_path)
+                    clip = video.subclip(begin_time, end_time)
+                    clip.write(out_path)
                 QMessageBox.information(self.wid, 'Sucess',
                         'Clips succesfuly saved')
                 self.errorLabel.setText('Clips saved at ' + dirPath)
