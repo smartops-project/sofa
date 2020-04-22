@@ -291,7 +291,7 @@ class VideoWindow(QMainWindow):
                 if begin_time < end_video and len(marks) > 0:
                     i = len(marks)
                     out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
-                    clip = video.subclip(begin_time, end_time)
+                    clip = video.subclip(begin_time)
                     clip.write_videofile(out_path)
                 self.errorLabel.setText('Clips saved at ' + dirPath)
                 QMessageBox.information(self.wid, 'Sucess',
