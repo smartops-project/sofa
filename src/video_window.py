@@ -296,7 +296,7 @@ class VideoWindow(QMainWindow):
                     clip.write_videofile(out_path)
                 self.errorLabel.setText('Clips saved at ' + dirPath)
                 QMessageBox.information(self.wid, 'Sucess',
-                        'Clips succesfuly saved')
+                        'Clips succesfully saved')
             except:
                 self.errorLabel.setText('Error: Could not save file.')
                 QMessageBox.warning(self.wid, 'Error',
