@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import (QWidget, QSlider, QApplication,
+from PyQt5.QtWidgets import (QWidget, QSlider, QApplication, QSizePolicy,
                              QHBoxLayout, QVBoxLayout)
 from PyQt5.QtCore import QObject, Qt, pyqtSignal
 from PyQt5.QtGui import QPainter, QFont, QColor, QPen
@@ -16,6 +16,7 @@ class HlightRmClipsWidget(QWidget):
     def initUI(self):
         self.setMinimumSize(170, 30)
         self.value = 0
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
     def setValue(self, value: int):
         self.value = value
