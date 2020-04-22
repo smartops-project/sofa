@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon, QKeySequence
 from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QPushButton,
         QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, QTableWidget,
         QTableWidgetItem, QMainWindow, QAction, QAbstractScrollArea, QShortcut,
-        QSpacerItem, QProgressBar)
+        QSpacerItem, QProgressBar, QMessageBox)
 
 from utils import create_action, format_time
 from bad_clips_table import BadClipsWidget
@@ -43,9 +43,9 @@ class VideoWindow(QMainWindow):
         self.errorLabel.setSizePolicy(QSizePolicy.Preferred,
                 QSizePolicy.Maximum)
         self.create_menu_bar()
-        wid = QWidget(self)
-        self.setCentralWidget(wid)
-        self.set_layout(videoWidget, wid)
+        self.wid = QWidget(self)
+        self.setCentralWidget(self.wid)
+        self.set_layout(videoWidget, self.wid)
         self.mediaPlayer.setVideoOutput(videoWidget)
         self.mediaPlayer.stateChanged.connect(self.mediaStateChanged)
         self.mediaPlayer.positionChanged.connect(self.positionChanged)
@@ -167,9 +167,16 @@ class VideoWindow(QMainWindow):
         self.rawFileName, _ = QFileDialog.getOpenFileName(self, "Open video",
                 QDir.homePath())
         if self.rawFileName != '':
-            self.fileName = TMP_VIDEO_PATH
-            process = ProcVideoDialog(self.rawFileName, self.fileName, self)
-            self.comm.videoProcessed.connect(self.openMedia)
+            should_process = QMessageBox.question(self.wid, 'Open video',
+                    'Do you want to pre process the video?',
+                    QMessageBox.Yes | QMessageBox.No)
+            if should_process == QMessageBox.Yes:
+                self.fileName = TMP_VIDEO_PATH
+                process = ProcVideoDialog(self.rawFileName, self.fileName, self)
+                self.comm.videoProcessed.connect(self.openMedia)
+            else:
+                self.fileName = self.rawFileName
+                self.openMedia()
 
     @pyqtSlot()
     def openMedia(self):
@@ -269,20 +276,29 @@ class VideoWindow(QMainWindow):
                 '_slice_'
         dirPath = QFileDialog.getExistingDirectory(self, 'Select Dir')
         if dirPath != '':
-            marks = self.clipsWidget.get_marks()
-            begin_time = 0.0
-            for i, m in enumerate(marks):
-                end_time = float(m[0])
-                out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
-                ffmpeg_extract_subclip(self.fileName,
-                        begin_time, end_time, targetname=out_path)
-                begin_time = float(m[1])
-            end_video = self.mediaPlayer.duration()/1000
-            if begin_time < end_video and len(marks) > 0:
-                i = len(marks)
-                out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
-                ffmpeg_extract_subclip(self.fileName,
-                        begin_time, end_video, targetname=out_path)
+            try:
+                marks = self.clipsWidget.get_marks()
+                begin_time = 0.0
+                for i, m in enumerate(marks):
+                    end_time = float(m[0])
+                    out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
+                    ffmpeg_extract_subclip(self.fileName,
+                            begin_time, end_time, targetname=out_path)
+                    begin_time = float(m[1])
+                end_video = self.mediaPlayer.duration()/1000
+                if begin_time < end_video and len(marks) > 0:
+                    i = len(marks)
+                    out_path = os.path.join(dirPath, prefix+str(i)+".mp4")
+                    ffmpeg_extract_subclip(self.fileName,
+                            begin_time, end_video, targetname=out_path)
+                QMessageBox.information(self.wid, 'Sucess',
+                        'Clips succesfuly saved')
+                self.errorLabel.setText('Clips saved at ' driPath)
+            except:
+                QMessageBox.warning(self.wid, 'Error',
+                        'Could not save file. Check permissions')
+                self.errorLabel.setText('Error: ' + \
+                        'Could not save file. Check permissions')
 
     @pyqtSlot()
     def createMark(self):
