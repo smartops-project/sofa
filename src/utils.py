@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtGui import QIcon
+import pandas as pd
 
 
 def create_action(icon, action, shortcut, tip, conn, parent):
@@ -21,3 +22,10 @@ def format_time(sec):
     return ':'.join(time)
 
 
+def get_metadata_colors(filename):
+    try:
+        df = pd.read_csv(filename).sort_values(
+            by='frame_num', ascending=True)
+        return df['diff']
+    except:
+        return []

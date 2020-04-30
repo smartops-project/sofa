@@ -9,9 +9,10 @@ from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QPushButton,
 
 from utils import create_action, format_time
 from bad_clips_table import BadClipsWidget
-from bad_clips_slider import HlightRmClipsWidget
+from bad_clips_slider import HlightSliderTipsWidget
 from proc_bar_dialog import ProcVideoDialog
 from signals import SignalBus
+from utils import get_metadata_colors
 
 import os
 import sys
@@ -68,7 +69,6 @@ class VideoWindow(QMainWindow):
         self.goBackButton.clicked.connect(partial(self.back, 10))
         self.positionSlider.sliderMoved.connect(self.setPosition)
         self.cutButton.clicked.connect(self.createMark)
-        self.cutButton.clicked.connect(self.hlightSlider.toggleRm)
 
         return videoWidget
 
@@ -101,7 +101,7 @@ class VideoWindow(QMainWindow):
         self.timeBox.setAlignment(Qt.AlignCenter)
         self.rateBox = QLabel(str(self.rate) + 'x', self)
         self.rateBox.setAlignment(Qt.AlignCenter)
-        self.hlightSlider = HlightRmClipsWidget()
+        self.hlightSliderTips = HlightSliderTipsWidget()
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 0)
 
@@ -159,7 +159,7 @@ class VideoWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.positionSlider)
-        layout.addWidget(self.hlightSlider)
+        layout.addWidget(self.hlightSliderTips)
         layout.addLayout(buttonsLayout)
         layout.addLayout(cutLayout)
         return layout
@@ -177,7 +177,20 @@ class VideoWindow(QMainWindow):
                 self.comm.videoProcessed.connect(self.openMedia)
             else:
                 self.fileName = self.rawFileName
+                self.processMetaData()
                 self.openMedia()
+
+
+    def processMetaData(self):
+        '''
+        Get array indicating "suspicious" frames
+        '''
+        # open metadata file
+        self.metaDataFile = self.fileName.rsplit(".", 1)[0] + ".csv"
+        # get only the array with "colors" (==0: green; !=0: red)
+        self.colorsArray = get_metadata_colors(self.metaDataFile)
+        self.hlightSliderTips.setColorsArray(self.colorsArray, useYellow=False)
+
 
     @pyqtSlot()
     def openMedia(self):
@@ -254,12 +267,12 @@ class VideoWindow(QMainWindow):
 
     def positionChanged(self, position):
         self.positionSlider.setValue(position)
-        self.hlightSlider.setValue(position)
+        self.hlightSliderTips.setValue(position)
         self.timeBox.setText(format_time(int(position/1000)))
 
     def durationChanged(self, duration):
         self.positionSlider.setRange(0, duration)
-        self.hlightSlider.setRange(duration)
+        self.hlightSliderTips.setRange(duration)
 
     def setPosition(self, position):
         self.mediaPlayer.setPosition(position)
