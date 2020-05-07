@@ -19,7 +19,7 @@ class HlightSliderTipsWidget(QWidget):
         self.value = 0
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
-    def setColorsArray(self, colorsArray, useYellow=True):
+    def setColorsArray(self, colorsArray, useYellow=False):
         self.colorsArray = colorsArray
         self.setRange(len(colorsArray))
         self.useYellow = useYellow
@@ -62,11 +62,17 @@ class HlightSliderTipsWidget(QWidget):
                 if (diff_value != 0):
                     qp.setPen(QColor(184, 0, 0))
                     qp.setBrush(QColor(184, 0, 0))
+                else:
+                    qp.setPen(QColor(80, 80, 80))
+                    qp.setBrush(QColor(80, 80, 80))
 
                 # drawRect(x1,y1,w,h), which here is...
                 qp.drawRect(curr, 0, till, h)
                 if (diff_value != 0):
                     pen = QPen(QColor(255, 0, 0), 1, Qt.SolidLine)
+                else:
+                    pen = QPen(QColor(80, 80, 80), 1, Qt.SolidLine)
+
                 qp.setPen(pen)
         else:
             for curr, diff_value in enumerate(self.colorsArray):
